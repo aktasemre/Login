@@ -1,0 +1,17 @@
+package com.login.payload.request.user;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserUpdatePasswordRequest {
+    private String password_hash;
+    private String retry_password_hash;
+
+    private String reset_password_codee;
+}
