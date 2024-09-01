@@ -2,15 +2,18 @@ package com.login.security.jwt;
 
 import com.login.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 @Component
 public class JwtUtils {
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${backendapi.app.jwtExpirationMs}")
@@ -32,7 +35,8 @@ public class JwtUtils {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SECRET_KEY)
+               // .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
