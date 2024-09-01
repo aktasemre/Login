@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 @Table(name = "t_user")
 public class User {
-
+//deneme
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

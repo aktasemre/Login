@@ -1,6 +1,7 @@
 package com.login.security.config;
 
 import com.login.security.jwt.AuthEntryPointJwt;
+import com.login.security.jwt.AuthTokenFilter;
 import com.login.security.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,6 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
-
     }
 
     @Bean
@@ -40,7 +40,8 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers(AUTH_WHITE_LIST).permitAll()
+                .authorizeHttpRequests()
+                .requestMatchers(AUTH_WHITE_LIST).permitAll()
                 .anyRequest().authenticated();
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
@@ -68,19 +69,16 @@ public class WebSecurityConfig {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-
-                registry.addMapping("/**") // tum URL lere muade ediyoruz
-                        .allowedOrigins("*") // butun kaynaklara izin veriyoruz, farkli sunucular veya domainler
-                        .allowedHeaders("*") // Authorization, Content-Type
-                        .allowedMethods("*");// Http Methodlarina izin veriyoruz ( GET- POST - PUT - DELETE )
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedHeaders("*")
+                        .allowedMethods("*");
             }
         };
     }
-
 
     private static final String[] AUTH_WHITE_LIST = {
             "/",
@@ -92,12 +90,9 @@ public class WebSecurityConfig {
             "/images/**",
             "/js/**",
             "/contactMessages/save",
-            //*************************************
             "/login",
             "/register",
             "/getir/**",
             "/toplantial/**"
-
-
     };
 }
