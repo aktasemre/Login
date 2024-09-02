@@ -27,7 +27,7 @@ public class EmailService {
         helper.setTo(toEmail);
         helper.setSubject("Şifre Sıfırlama Kodu");
         helper.setText("Şifrenizi sıfırlamak için bu kodu kullanın: " + resetCode, false); // HTML değil, düz metin gönderiyoruz
-        helper.setFrom("randevudefteri@outlook.com");
+        helper.setFrom("loginakbil@outlook.com");
 
         // Eposta gönderimi
         javaMailSender.send(mimeMessage);

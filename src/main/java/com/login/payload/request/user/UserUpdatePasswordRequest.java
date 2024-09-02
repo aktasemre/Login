@@ -11,7 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserUpdatePasswordRequest {
     private String password_hash;
-    private String retry_password_hash;
+    private String newPassword;
+    private String email;
 
     private String reset_password_codee;
 }

@@ -1,6 +1,7 @@
 package com.login.controller.User;
 
 import com.login.entity.user.User;
+import com.login.payload.request.user.UserUpdatePasswordRequest;
 import com.login.service.mail.EmailService;
 import com.login.service.user.UserService;
 import jakarta.mail.MessagingException;
@@ -47,10 +48,11 @@ public class AuthController {
     }
 
     @PostMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestParam String email, @RequestParam String resetCode,
-                                            @RequestParam String newPassword) {
+    public ResponseEntity<?> updatePassword(@RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
         // Kullanıcıyı email ve reset kodu ile doğrula
-        Optional<User> optionalUser = userService.findByEmailAndResetCode(email, resetCode);
+        Optional<User> optionalUser = userService
+                .findByEmailAndResetCode(userUpdatePasswordRequest.getEmail()
+                        ,userUpdatePasswordRequest.getReset_password_codee() );
         if (!optionalUser.isPresent()) {
             return ResponseEntity.badRequest().body("Geçersiz reset kodu veya e-posta!");
         }
@@ -58,7 +60,7 @@ public class AuthController {
         User user = optionalUser.get();
 
         // Şifreyi güncelle ve reset kodunu temizle
-        userService.updatePassword(user, newPassword);
+        userService.updatePassword(user, userUpdatePasswordRequest.getNewPassword());
 
         return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
     }
