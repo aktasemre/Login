@@ -44,7 +44,7 @@ public class User {
     @NotNull(message = "şifre  boş olmamalıdır!")
     private String sifre;
 
-    @OneToOne()
+    @ManyToOne
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 
@@ -64,11 +64,9 @@ public class User {
     private Long point = 0L;
 
 
-    private String reset_password_code;
+    private String resetPasswordCode;
 
-
-    @PrePersist
-    private void resetPasswordCode(){
+    public void resetPasswordCode() {
         String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = upperCaseLetters.toLowerCase();
         String numbers = "0123456789";
@@ -84,7 +82,7 @@ public class User {
             passwordBuilder.append(combinedChars.charAt(randomIndex));
         }
 
-        reset_password_code=passwordBuilder.toString();
+        this.resetPasswordCode = passwordBuilder.toString();
     }
 
 }
