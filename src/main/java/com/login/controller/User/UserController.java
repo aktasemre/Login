@@ -2,6 +2,7 @@ package com.login.controller.User;
 
 import com.login.payload.request.user.LoginRequest;
 import com.login.payload.request.user.UserRequest;
+import com.login.payload.request.user.UserUpdatePasswordRequest;
 import com.login.payload.response.ResponseMessage;
 import com.login.payload.response.user.AuthResponse;
 import com.login.payload.response.user.UserResponse;
@@ -31,7 +32,6 @@ public class UserController {
 
     //F02 - register
     @PostMapping("/register") // http://localhost:8080/register
-
     public ResponseEntity<ResponseMessage<UserResponse>> saveUser(@RequestBody @Valid UserRequest userRequest) {
         return ResponseEntity.ok(userServise.saveUser(userRequest));
     }
@@ -46,6 +46,8 @@ public class UserController {
     ){
         return ResponseEntity.ok(userServise.userArama(q));
     }
+
+
 
 
 
