@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -61,4 +63,30 @@ public class User {
     @Builder.Default
     private Long point = 0L;
 
+
+    private String reset_password_code;
+
+
+    @PrePersist
+    private void resetPasswordCode(){
+        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = upperCaseLetters.toLowerCase();
+        String numbers = "0123456789";
+        String symbols = "!@#$%^&*()-_=+[{]}|;:',<.>/?";
+
+        String combinedChars = upperCaseLetters + lowerCaseLetters + numbers + symbols;
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder passwordBuilder = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            int randomIndex = random.nextInt(combinedChars.length());
+            passwordBuilder.append(combinedChars.charAt(randomIndex));
+        }
+
+        reset_password_code=passwordBuilder.toString();
+    }
+
 }
+
+

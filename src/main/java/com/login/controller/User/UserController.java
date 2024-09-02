@@ -37,9 +37,10 @@ public class UserController {
     }
 
 
-    // user arama
+    //  F03 user arama
 
     @GetMapping("/userarama")
+    @PreAuthorize("hasAnyAuthority('ADMIN','CUSTOMER')")
     public ResponseEntity<List<UserResponse>> userArama(
             @RequestParam(required = false) String q
     ){
