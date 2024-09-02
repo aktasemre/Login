@@ -6,6 +6,7 @@ import com.login.payload.mapper.UserMapper;
 import com.login.payload.messeges.SuccessMessages;
 import com.login.payload.request.user.LoginRequest;
 import com.login.payload.request.user.UserRequest;
+import com.login.payload.request.user.UserUpdatePasswordRequest;
 import com.login.payload.response.ResponseMessage;
 import com.login.payload.response.user.AuthResponse;
 import com.login.payload.response.user.UserResponse;
@@ -139,4 +140,6 @@ public class UserService {
                 user.setResetPasswordCode(null); // Reset kodunu temizle
                 userRepository.save(user);
         }
+
+
 }
