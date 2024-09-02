@@ -10,6 +10,7 @@ import lombok.*;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,11 +27,11 @@ public class User {
 
     @NotNull(message = "Ad boş olmamalıdır!")
     @Size(min = 2, max = 30, message = "Ad en az 2 karakter olmalıdır!")
-    private String first_name;
+    private String firstName;
 
     @NotNull(message = "Soyad boş olmamalıdır!")
     @Size(min = 2, max = 30, message = "Soyad en az 2 karakter olmalıdır!")
-    private String last_name;
+    private String lastName;
 
     @NotNull(message = "E-posta boş olmamalıdır!")
     @Email(message = "Lütfen geçerli bir e-posta giriniz!")
@@ -53,6 +54,9 @@ public class User {
     private String uyruk;
     private String babaAdi;
     private String anneAdi;
+
+    private LocalDateTime creatDate;
+    private LocalDateTime updateAt;
 
     @Builder.Default
     private Long point = 0L;

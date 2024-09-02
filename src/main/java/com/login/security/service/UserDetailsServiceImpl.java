@@ -31,8 +31,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     user.getSifre(),
 
                     user.getEmail(),
-                    user.getFirst_name(),
-                    user.getLast_name(),
+                    user.getFirstName(),
+                    user.getLastName(),
 
                     //**********
                     user.getUserRole().getRoleType().name()

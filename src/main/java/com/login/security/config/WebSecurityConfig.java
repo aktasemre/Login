@@ -92,7 +92,6 @@ public class WebSecurityConfig {
             "/contactMessages/save",
             "/login",
             "/register",
-            "/getir/**",
-            "/toplantial/**"
+            "/userarama"
     };
 }
