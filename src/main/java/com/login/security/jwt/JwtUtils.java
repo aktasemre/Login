@@ -19,30 +19,23 @@ public class JwtUtils {
     @Value("${backendapi.app.jwtExpirationMs}")
     private Long jwtExpirationMs;
 
-    @Value("${backendapi.app.jwtSecret}")
-    private String jwtSecret;
-
-    public String generateJwtToken(Authentication authentication){
-
+    public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return generateJwtTokenFromEmail(userDetails.getEmail());
     }
 
-
-
-    public String generateJwtTokenFromEmail(String email){
+    public String generateJwtTokenFromEmail(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(SECRET_KEY)
-               // .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public boolean validateJwtToken(String jwtToken){
+    public boolean validateJwtToken(String jwtToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
+            Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(jwtToken);
             return true;
         } catch (ExpiredJwtException e) {
             LOGGER.error("Jwt token is expired : {}", e.getMessage());
@@ -58,12 +51,12 @@ public class JwtUtils {
         return false;
     }
 
-    public String getEmailFromJwtToken(String jwtToken){
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
+    public String getEmailFromJwtToken(String jwtToken) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(jwtToken)
                 .getBody()
                 .getSubject();
     }
-
 }
