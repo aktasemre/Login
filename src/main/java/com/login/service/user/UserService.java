@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,26 +30,23 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServise {
+public class UserService {
 
         private final UserRepository userRepository;
         private final AuthenticationManager authenticationManager;
         private final JwtUtils jwtUtils;
         private final UserRoleService userRoleService;
         private final UserMapper userMapper;
-
         private final UniquePropertyValidator uniquePropertyValidator;
-
-        private final PasswordEncoder passwordEncoder;
-        //private final MailService mailService;
-
+        private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // BCryptPasswordEncoder kullanımı
 
         // F01 - login
         public ResponseEntity<AuthResponse> authenticateUser(LoginRequest loginRequest) {
                 String email = loginRequest.getEmail();
                 String password = loginRequest.getSifre();
 
-                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(email, password));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -71,82 +69,76 @@ public class UserServise {
 
                 role.ifPresent(authResponse::role);
                 return ResponseEntity.ok(authResponse.build());
-
-
         }
 
-
-
-
-        //F02 - register
+        // F02 - register
         public ResponseMessage<UserResponse> saveUser(UserRequest userRequest) {
                 uniquePropertyValidator.checkDuplicate(userRequest.getEmail());
 
                 Set<UserRole> userRole = new HashSet<>();
-
                 UserRole customer = userRoleService.getUserRole(RoleType.CUSTOMER);
-
                 userRole.add(customer);
+
                 User user = userMapper.mapUserRequestToUser(userRequest);
-
                 user.setBuilt_in(Boolean.FALSE);
-
-
-                user.setUserRole(customer) ;
-
-
-
-                user.setSifre(passwordEncoder.encode(user.getSifre()));
-
+                user.setUserRole(customer);
+                user.setSifre(passwordEncoder.encode(user.getSifre())); // Şifre hashleniyor
 
                 User savedUser = userRepository.save(user);
-
 
                 return ResponseMessage.<UserResponse>builder()
                         .message(SuccessMessages.USER_CREATED)
                         .object(userMapper.mapUserToUserResponse(savedUser))
                         .build();
-
         }
 
         public long countAllAdmins(){
                 return userRepository.countAdmin(RoleType.ADMIN);
         }
 
-
         public String saveAdmin(UserRequest userRequest) {
-
                 Set<UserRole> userRole = new HashSet<>();
-
                 UserRole admin = userRoleService.getUserRole(RoleType.ADMIN);
-
                 userRole.add(admin);
 
                 User user = userMapper.mapUserRequestToUser(userRequest);
-
                 user.setBuilt_in(Boolean.TRUE);
-
-
-                user.setSifre(passwordEncoder.encode(userRequest.getSifre()));
-
-
-
-                user.setUserRole(admin) ;
+                user.setSifre(passwordEncoder.encode(userRequest.getSifre())); // Şifre hashleniyor
+                user.setUserRole(admin);
                 userRepository.save(user);
 
                 return SuccessMessages.USER_CREATED;
         }
 
         public List<UserResponse> userArama(String q) {
-
-                List<User> users=userRepository.araUser(q);
-
-                List<UserResponse> userResponses=new ArrayList<>();
-                for (User z:users) {
-                       userResponses.add(userMapper.mapUserToUserResponse(z)) ;
+                List<User> users = userRepository.araUser(q);
+                List<UserResponse> userResponses = new ArrayList<>();
+                for (User z : users) {
+                        userResponses.add(userMapper.mapUserToUserResponse(z));
                 }
-                        return userResponses;
+                return userResponses;
+        }
 
+        // Şifre sıfırlama kodunu oluştur ve kaydet
+        public void generateResetPasswordCode(User user) {
+                user.resetPasswordCode();
+                userRepository.save(user);
+        }
+
+        // Email ile kullanıcıyı bul
+        public Optional<User> findByEmail(String email) {
+                return userRepository.findByEmail(email);
+        }
+
+        public Optional<User> findByEmailAndResetCode(String email, String resetCode) {
+                return userRepository.findByEmailAndResetPasswordCode(email, resetCode);
+        }
+
+
+        public void updatePassword(User user, String newPassword) {
+                user.setSifre(passwordEncoder.encode(newPassword)); // Şifreyi hashleyin
+                user.setResetPasswordCode(null); // Reset kodunu temizle
+                userRepository.save(user);
         }
 
 

@@ -6,7 +6,7 @@ import com.login.payload.request.user.UserUpdatePasswordRequest;
 import com.login.payload.response.ResponseMessage;
 import com.login.payload.response.user.AuthResponse;
 import com.login.payload.response.user.UserResponse;
-import com.login.service.user.UserServise;
+import com.login.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.List;
 public class UserController {
 
 
-    private final UserServise userServise;
+    private final UserService userServise;
 
     // F01 - login
     @PostMapping("/login") // http://localhost:8080/login

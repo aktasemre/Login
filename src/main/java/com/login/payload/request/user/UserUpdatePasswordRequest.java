@@ -10,10 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserUpdatePasswordRequest {
+    private String password_hash;
+    private String retry_password_hash;
 
-
-    private String resetKod;
-    private String yeniSifre;
-
-    private String tekrarYeniSifre;
+    private String reset_password_codee;
 }
