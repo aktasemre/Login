@@ -5,7 +5,7 @@ import com.login.entity.user.UserRole;
 import com.login.payload.request.user.UserRequest;
 import com.login.repository.User.UserRoleRepository;
 import com.login.service.user.UserRoleService;
-import com.login.service.user.UserServise;
+import com.login.service.user.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,11 +24,11 @@ public class LoginApplication implements CommandLineRunner {
 
 	private final UserRoleRepository userRoleRepository;
 
-	private final UserServise userService;
+	private final UserService userService;
 
 	public LoginApplication(UserRoleService userRoleService,
 									 UserRoleRepository userRoleRepository,
-									 UserServise userService) {
+									 UserService userService) {
 
 		this.userRoleService = userRoleService;
 		this.userRoleRepository = userRoleRepository;

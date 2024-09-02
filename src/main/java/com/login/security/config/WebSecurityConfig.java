@@ -41,8 +41,8 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                .requestMatchers(AUTH_WHITE_LIST).permitAll() // Bu endpoint'lere herkes erişebilir
-                .anyRequest().authenticated(); // Diğer tüm endpoint'ler için kimlik doğrulama gereklidir
+                .requestMatchers(AUTH_WHITE_LIST).permitAll()
+                .anyRequest().authenticated();
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -91,7 +91,10 @@ public class WebSecurityConfig {
             "/js/**",
             "/contactMessages/save",
             "/login",
-            "/register"
+            "/register",
+            "/reset/resetPassword",
+            "/reset/update-password",
             // "/userarama" endpoint'i bu listeden kaldırıldı
     };
+
 }
