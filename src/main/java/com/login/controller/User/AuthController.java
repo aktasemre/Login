@@ -3,6 +3,7 @@ package com.login.controller.User;
 import com.login.entity.user.User;
 import com.login.service.mail.EmailService;
 import com.login.service.user.UserService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,14 @@ public class AuthController {
         userService.generateResetPasswordCode(user);
 
         // Reset kodunu e-posta olarak gönder
-        emailService.sendResetCode(user.getEmail(), user.getResetPasswordCode());
 
+        try {
+            // Reset kodunu e-posta olarak gönder
+            emailService.sendResetCode(user.getEmail(), user.getResetPasswordCode());
+        } catch (MessagingException e) {
+            // Hata durumunda kullanıcıya bilgi verin
+            return ResponseEntity.status(500).body("E-posta gönderiminde bir hata oluştu.");
+        }
         return ResponseEntity.ok("Şifre sıfırlama kodu e-posta adresinize gönderildi.");
     }
 

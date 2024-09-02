@@ -44,7 +44,7 @@ public class User {
     @NotNull(message = "şifre  boş olmamalıdır!")
     private String sifre;
 
-    @ManyToOne
+    @ManyToOne()
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 
