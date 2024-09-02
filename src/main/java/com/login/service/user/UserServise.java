@@ -23,9 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,5 +134,17 @@ public class UserServise {
                 userRepository.save(user);
 
                 return SuccessMessages.USER_CREATED;
+        }
+
+        public List<UserResponse> userArama(String q) {
+
+                List<User> users=userRepository.araUser(q);
+
+                List<UserResponse> userResponses=new ArrayList<>();
+                for (User z:users) {
+                       userResponses.add(userMapper.mapUserToUserResponse(z)) ;
+                }
+                        return userResponses;
+
         }
 }
