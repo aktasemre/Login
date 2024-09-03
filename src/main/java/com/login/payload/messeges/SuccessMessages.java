@@ -3,6 +3,7 @@ package com.login.payload.messeges;
 public class SuccessMessages {
 
 
+    public static final String MAIL_GONDERILDI ="Mail basariyla gonderildi" ;
 
     private SuccessMessages() {
     }
@@ -12,6 +13,7 @@ public class SuccessMessages {
     public static final String RANDEVU_SILME_BASARILI = "Belirtilen tarihlerdeki randevular başarıyla silindi.";
 
     public static final String USER_CREATED = "User is Saved";
+    public static final String PASSWORD_UPDATE = "Sifre guncellendi";
     public static final String TOPLANTI_BIL = "toplantı bilgileri başarı ile kayıt edildi";
 
     public static final String SORULAR_KAYIT = "toplantı soruları başarı ile kayıt edildi";

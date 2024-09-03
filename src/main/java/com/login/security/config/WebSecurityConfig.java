@@ -93,7 +93,7 @@ public class WebSecurityConfig {
             "/login",
             "/register",
             "/reset/resetPassword",
-            "/reset/update-password",
+            "/reset/updatePassword",
             // "/userarama" endpoint'i bu listeden kaldırıldı
     };
 

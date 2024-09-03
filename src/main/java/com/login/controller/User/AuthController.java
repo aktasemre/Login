@@ -1,67 +1,48 @@
 package com.login.controller.User;
-
-import com.login.entity.user.User;
 import com.login.payload.request.user.UserUpdatePasswordRequest;
-import com.login.service.mail.EmailService;
-import com.login.service.user.UserService;
-import jakarta.mail.MessagingException;
+import com.login.payload.response.ResponseMessage;
+import com.login.service.user.AuthService;
+import jakarta.validation.Valid;
+import com.login.entity.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("reset")
+@RequestMapping("/reset")
 public class AuthController {
 
-
-    private final UserService userService;
-    private final EmailService emailService;
+    private final AuthService authService;
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestParam String email) {
-        // Kullanıcıyı email ile bul ve reset kodunu kaydet
-        System.err.println("calistimi 1");
-        Optional<User> optionalUser = userService.findByEmail(email);
-        if (!optionalUser.isPresent()) {
-            return ResponseEntity.badRequest().body("Kullanıcı bulunamadı!");
-        }
-        System.err.println("calistimi 2");
-        User user = optionalUser.get();
-
-        // Reset kodunu oluştur ve kaydet
-        userService.generateResetPasswordCode(user);
-
-        // Reset kodunu e-posta olarak gönder
-
-        try {
-            // Reset kodunu e-posta olarak gönder
-            emailService.sendResetCode(user.getEmail(), user.getResetPasswordCode());
-        } catch (MessagingException e) {
-            // Hata durumunda kullanıcıya bilgi verin
-            return ResponseEntity.status(500).body("E-posta gönderiminde bir hata oluştu.");
-        }
-        return ResponseEntity.ok("Şifre sıfırlama kodu e-posta adresinize gönderildi.");
+    public ResponseEntity<ResponseMessage<Void>> resetPassword(@RequestBody @Valid UserUpdatePasswordRequest passwordResetRequest) {
+        ResponseMessage<Void> response = authService.resetPassword(passwordResetRequest);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
-    @PostMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
-        // Kullanıcıyı email ve reset kodu ile doğrula
-        Optional<User> optionalUser = userService
-                .findByEmailAndResetCode(userUpdatePasswordRequest.getEmail()
-                        ,userUpdatePasswordRequest.getReset_password_codee() );
-        if (!optionalUser.isPresent()) {
-            return ResponseEntity.badRequest().body("Geçersiz reset kodu veya e-posta!");
-        }
 
-        User user = optionalUser.get();
+    @PostMapping("/updatePassword")
+    public ResponseEntity<ResponseMessage<Void>> updatePassword(@RequestBody @Valid UserUpdatePasswordRequest userUpdatePasswordRequest) {
+        ResponseMessage<Void> response = authService.updatePassword(userUpdatePasswordRequest);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
 
-        // Şifreyi güncelle ve reset kodunu temizle
-        userService.updatePassword(user, userUpdatePasswordRequest.getNewPassword());
-
-        return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+  //  @PostMapping("/update-password")
+  //  public ResponseEntity<?> updatePassword(@RequestBody UserUpdatePasswordRequest userUpdatePasswordRequest) {
+  //      // Kullanıcıyı email ve reset kodu ile doğrula
+  //      Optional<User> optionalUser = userService
+  //              .findByEmailAndResetCode(userUpdatePasswordRequest.getEmail()
+  //                      ,userUpdatePasswordRequest.getReset_password_codee() );
+  //      if (!optionalUser.isPresent()) {
+  //          return ResponseEntity.badRequest().body("Geçersiz reset kodu veya e-posta!");
+  //      }
+//
+  //      User user = optionalUser.get();
+//
+  //      // Şifreyi güncelle ve reset kodunu temizle
+  //      userService.updatePassword(user, userUpdatePasswordRequest.getNewPassword());
+//
+  //      return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+//
     }
 }
