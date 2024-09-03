@@ -1,19 +1,13 @@
 package com.login.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.lang.Nullable;
-
-
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,7 +16,6 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Table(name = "t_user")
 public class User {
-//deneme
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,11 +34,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @NotNull(message = "şifre  boş olmamalıdır!")
+    @NotNull(message = "Şifre boş olmamalıdır!")
     private String sifre;
 
     @ManyToOne()
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 
     private Boolean built_in;
@@ -63,28 +55,25 @@ public class User {
     @Builder.Default
     private Long point = 0L;
 
-
     private String resetPasswordCode;
+    private LocalDateTime resetPasswordCodeExpiry;
 
-    public void resetPasswordCode() {
-        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lowerCaseLetters = upperCaseLetters.toLowerCase();
-        String numbers = "0123456789";
-        String symbols = "!@#$%^&*()-_=+[{]}|;:',<.>/?";
+    private static final int CODE_LENGTH = 6;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-        String combinedChars = upperCaseLetters + lowerCaseLetters + numbers + symbols;
-
-        SecureRandom random = new SecureRandom();
-        StringBuilder passwordBuilder = new StringBuilder();
-
-        for (int i = 0; i < 8; i++) {
-            int randomIndex = random.nextInt(combinedChars.length());
-            passwordBuilder.append(combinedChars.charAt(randomIndex));
-        }
-
-        this.resetPasswordCode = passwordBuilder.toString();
+    // 6 haneli rastgele kod üretir
+    public void generateResetPasswordCode() {
+        int code = RANDOM.nextInt((int) Math.pow(10, CODE_LENGTH));
+        this.resetPasswordCode = String.format("%0" + CODE_LENGTH + "d", code);
+        this.resetPasswordCodeExpiry = LocalDateTime.now().plusMinutes(3);
+    //plusHours(1); // Kodun geçerlilik süresi
     }
 
+    // Kodun geçerliliğini kontrol eder
+    public boolean isResetPasswordCodeValid(String code) {
+        if (resetPasswordCodeExpiry == null || LocalDateTime.now().isAfter(resetPasswordCodeExpiry)) {
+            return false; // Kodun süresi dolmuş
+        }
+        return resetPasswordCode.equals(code); // Kodu doğrulama
+    }
 }
-
-

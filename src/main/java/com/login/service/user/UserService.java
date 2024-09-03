@@ -119,11 +119,7 @@ public class UserService {
                 return userResponses;
         }
 
-        // Şifre sıfırlama kodunu oluştur ve kaydet
-        public void generateResetPasswordCode(User user) {
-                user.resetPasswordCode();
-                userRepository.save(user);
-        }
+
 
         // Email ile kullanıcıyı bul
         public Optional<User> findByEmail(String email) {
@@ -134,10 +130,11 @@ public class UserService {
                 return userRepository.findByEmailAndResetPasswordCode(email, resetCode);
         }
 
-
+        // Şifreyi güncelle
         public void updatePassword(User user, String newPassword) {
                 user.setSifre(passwordEncoder.encode(newPassword)); // Şifreyi hashleyin
-                user.setResetPasswordCode(null); // Reset kodunu temizle
+                user.setResetPasswordCode(null); // Kodun hashini temizleyin
+                user.setResetPasswordCodeExpiry(null); // Kodun geçerlilik süresini temizleyin
                 userRepository.save(user);
         }
 
