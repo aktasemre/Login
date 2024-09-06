@@ -27,16 +27,14 @@ public class EmailService {
         helper.setTo(toEmail);
         helper.setSubject("Şifre Sıfırlama Kodu");
         helper.setText("Şifrenizi sıfırlamak için bu kodu kullanın: " + resetCode, false); // HTML değil, düz metin gönderiyoruz
-//<<<<<<< HEAD
-        helper.setFrom("loginemrenes@outlook.com");
-      //  helper.setFrom("randevudefteri@outlook.com");
-        System.err.println("mail gonderilmeden hemen once :"+resetCode);
-//=======
-        helper.setFrom("loginakbil@outlook.com");
 
-//>>>>>>> main
+       // helper.setFrom("loginemrenes@outlook.com");
+       helper.setFrom("randevudefteri@outlook.com");
+        System.err.println("mail gonderilmeden hemen once :"+resetCode);
+
         // Eposta gönderimi
         javaMailSender.send(mimeMessage);
+        System.out.println("mail gonderilmeden hemen somra :"+resetCode);
     }
 
 }
