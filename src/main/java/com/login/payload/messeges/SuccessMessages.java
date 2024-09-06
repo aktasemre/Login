@@ -4,6 +4,7 @@ public class SuccessMessages {
 
 
     public static final String MAIL_GONDERILDI ="Mail basariyla gonderildi" ;
+    public static final String MAIL_HATLI ="Hatali mail adresi girdiniz, mail adresi db de yok" ;
 
     private SuccessMessages() {
     }
