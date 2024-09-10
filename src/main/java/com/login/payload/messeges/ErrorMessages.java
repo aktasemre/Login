@@ -21,6 +21,9 @@ public class ErrorMessages {
 
     public static final String YETKISIZ_GIRIS="Bu toplantı bilgilerine erişim yetkiniz yok.";
 
+    public static final String RESET_CODE_EXPIRED = "Şifre sıfırlama kodunun süresi dolmuş.";
+    public static final String MAX_ATTEMPTS_REACHED = "Maksimum deneme sayısına ulaşıldı.";
+    public static final String INCORRECT_RESET_CODE = "Yanlış şifre sıfırlama kodu.";
 
 
 

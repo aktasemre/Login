@@ -11,8 +11,9 @@ import com.login.service.mail.EmailService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +24,29 @@ public class AuthService {
     private final UserService userService;
 
     public ResponseMessage<Void> resetPassword(UserUpdatePasswordRequest passwordResetRequest) {
-        User user = userRepository.findByEmail(passwordResetRequest.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", passwordResetRequest.getEmail()));
+        // Kullanıcının olup olmadığını kontrol et ve genel mesaj döndür
+        Optional<User> userOptional = userRepository.findByEmail(passwordResetRequest.getEmail());
+        if (!userOptional.isPresent()) {
+            return new ResponseMessage<>(null, HttpStatus.OK, SuccessMessages.MAIL_HATLI);
+        }
 
-        // Reset kodunu oluştur ve kaydet
+        User user = userOptional.get();
         generateResetPasswordCode(user);
-
-        // Reset kodunu e-posta olarak gönder
+        // Kullanıcı adını ve soyadını da geçerek e-posta gönder
         try {
-            emailService.sendResetCode(user.getEmail(), user.getResetPasswordCode());
+            emailService.sendResetCode(user.getEmail()
+                    , user.getFirstName()
+                    , user.getLastName()
+                    , user.getResetPasswordCode()
+            ,user.getResetPasswordCodeExpiry());
+
+
+
         } catch (MessagingException e) {
+            e.printStackTrace(); // Hata mesajını detaylı logla
             return new ResponseMessage<>(null, HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.EMAIL_CANNOT_BE_NULL);
         }
+
 
         return new ResponseMessage<>(null, HttpStatus.OK, SuccessMessages.MAIL_GONDERILDI);
     }
@@ -54,6 +66,4 @@ public class AuthService {
         user.generateResetPasswordCode();
         userRepository.save(user);
     }
-
-
 }

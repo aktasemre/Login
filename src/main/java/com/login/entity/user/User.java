@@ -1,5 +1,6 @@
 package com.login.entity.user;
 
+import com.login.payload.messeges.ErrorMessages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import lombok.*;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -61,19 +63,42 @@ public class User {
     private static final int CODE_LENGTH = 6;
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    // 6 haneli rastgele kod üretir
+    private int failedAttempts = 3; // Yanlış kod denemesi sayacı
+    private static final int MAX_FAILED_ATTEMPTS = 5; // Maksimum başarısız deneme hakkı
+
+    //TODO bu kod baska clasta yazilabilir
+    //TODO hatali reset codda mesaj donmeli ve hatali giris sayisinda sikinti var duzeltilmeli
+
+    // 6 haneli rastgele alfanümerik kod üretir
     public void generateResetPasswordCode() {
-        int code = RANDOM.nextInt((int) Math.pow(10, CODE_LENGTH));
-        this.resetPasswordCode = String.format("%0" + CODE_LENGTH + "d", code);
-        this.resetPasswordCodeExpiry = LocalDateTime.now().plusMinutes(3);
-    //plusHours(1); // Kodun geçerlilik süresi
+        String possibleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder codeBuilder = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            codeBuilder.append(possibleCharacters.charAt(RANDOM.nextInt(possibleCharacters.length())));
+        }
+        this.resetPasswordCode = codeBuilder.toString();
+        this.resetPasswordCodeExpiry = LocalDateTime.now().plusMinutes(3); // Kodun geçerlilik süresi
     }
 
     // Kodun geçerliliğini kontrol eder
     public boolean isResetPasswordCodeValid(String code) {
         if (resetPasswordCodeExpiry == null || LocalDateTime.now().isAfter(resetPasswordCodeExpiry)) {
-            return false; // Kodun süresi dolmuş
+            throw new RuntimeException(ErrorMessages.RESET_CODE_EXPIRED);
+           // Kodun süresi dolmuş
         }
-        return resetPasswordCode.equals(code); // Kodu doğrulama
+
+        if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+            throw new RuntimeException(ErrorMessages.MAX_ATTEMPTS_REACHED); // Maksimum deneme sayısına ulaşıldı
+             // Maksimum deneme sayısına ulaşıldı
+        }
+
+        if (!resetPasswordCode.equals(code)) {
+            failedAttempts++;
+            throw new RuntimeException(ErrorMessages.INCORRECT_RESET_CODE);
+            // Yanlış kod
+        }
+
+        failedAttempts = 0; // Başarılı girişten sonra sıfırla
+        return true; // Kod doğru
     }
 }
