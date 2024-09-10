@@ -32,12 +32,21 @@ public class AuthService {
 
         User user = userOptional.get();
         generateResetPasswordCode(user);
-
+        // Kullanıcı adını ve soyadını da geçerek e-posta gönder
         try {
-            emailService.sendResetCode(user.getEmail(), user.getResetPasswordCode());
+            emailService.sendResetCode(user.getEmail()
+                    , user.getFirstName()
+                    , user.getLastName()
+                    , user.getResetPasswordCode()
+            ,user.getResetPasswordCodeExpiry());
+
+
+
         } catch (MessagingException e) {
+            e.printStackTrace(); // Hata mesajını detaylı logla
             return new ResponseMessage<>(null, HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.EMAIL_CANNOT_BE_NULL);
         }
+
 
         return new ResponseMessage<>(null, HttpStatus.OK, SuccessMessages.MAIL_GONDERILDI);
     }

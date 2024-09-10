@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifre Sıfırlama İsteği</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; /* Sayfa arka plan rengi */
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Gölge efekti */
+        }
+        .email-header {
+            text-align: center;
+            background-color: #007bff; /* Header arka plan rengi */
+            color: #ffffff;
+            padding: 20px 0;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .email-header img {
+            max-width: 100px;
+        }
+        .email-body {
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f9f9f9; /* Body arka plan rengi */
+        }
+        .email-body h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #007bff; /* Başlık rengi */
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #333333; /* Footer arka plan rengi */
+            padding: 20px 0;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+        .reset-code {
+            display: inline-block;
+            background-color: #28a745; /* Buton arka plan rengi */
+            color: #ffffff;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .reset-code:hover {
+            background-color: #218838; /* Hover efekti */
+        }
+        /* Timer Stil */
+        .timer {
+            font-size: 20px;
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <img src="https://yourdomain.com/logo.png" alt="Your Logo">
+        <h2>Şifre Sıfırlama İsteği</h2>
+    </div>
+    <div class="email-body">
+        <h1>Merhaba [[${firstName}]] [[${lastName}]],</h1>
+        <p>Şifrenizi sıfırlamak için bir istek aldık. Eğer bu isteği siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+        <p>Aşağıdaki kodu kullanarak şifrenizi sıfırlayabilirsiniz:</p>
+        <a href="www.aktasemre.com" class="reset-code">[[${resetCode}]]</a>
+
+        <!-- Timer Bölümü -->
+        <p>Kodun süresi dolana kadar kalan süre:</p>
+        <div class="timer" id="timer"></div>
+
+        <p>Bu kodun süresi [[${expiryTime}]] içinde dolacaktır.</p>
+        <p>Teşekkürler,<br>Destek Ekibi</p>
+    </div>
+    <div class="email-footer">
+        <p>© 2024 Your Company. Tüm hakları saklıdır.</p>
+    </div>
+</div>
+
+<script>
+    // Expiry time (DB'den gelecek süreyi burada ayarlıyoruz - milisaniye cinsinden)
+    var expiryTime = new Date("Sep 10, 2024 15:37:25").getTime(); // Örnek olarak sabit bir süre koydum
+
+    // Geri sayım fonksiyonu
+    var x = setInterval(function() {
+
+        // Şu anki zamanı alıyoruz
+        var now = new Date().getTime();
+
+        // Süre bitimine kalan zaman
+        var distance = expiryTime - now;
+
+        // Zamanı hesapla (saat, dakika, saniye)
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Timer'ı göster
+        document.getElementById("timer").innerHTML = hours + " saat " + minutes + " dakika " + seconds + " saniye ";
+
+        // Eğer süre dolmuşsa
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("timer").innerHTML = "Süre doldu!";
+        }
+    }, 1000);
+</script>
+
+</body>
+</html>
